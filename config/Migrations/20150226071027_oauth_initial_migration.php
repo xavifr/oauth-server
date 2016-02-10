@@ -1,6 +1,6 @@
 <?php
 
-class InitialMigration extends \Migrations\AbstractMigration
+class OauthInitialMigration extends \Migrations\AbstractMigration
 {
     /**
      * Change Method.
