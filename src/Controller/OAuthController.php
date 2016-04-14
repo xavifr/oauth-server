@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\I18n\Time;
 use League\OAuth2\Server\Exception\AccessDeniedException;
 use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Util\RedirectUri;
@@ -78,6 +79,9 @@ class OAuthController extends AppController
             return;
         }
 
+        $ownerModel = $this->request->query('owner_model') ?: 'Users';
+        $ownerId = $this->request->query('owner_id') ?: $this->Auth->user('id');
+        $clientId = $this->request->query('client_id');
         if (!$this->Auth->user()) {
             $query = $this->request->query;
             $query['redir'] = 'oauth';
@@ -90,6 +94,18 @@ class OAuthController extends AppController
                     '?' => $query
                 ]
             );
+        } else {
+            $currentTokens = $this->loadModel('OAuthServer.AccessTokens')
+                ->find()
+                ->where(['expires > ' => Time::now()->getTimestamp()])
+                ->matching('Sessions', function ($q) use ($ownerModel, $ownerId, $clientId) {
+                    return $q->where([
+                        'owner_model' => $ownerModel,
+                        'owner_id' => $ownerId,
+                        'client_id' => $clientId
+                    ]);
+                })
+                ->count();
         }
 
         $event = new Event('OAuthServer.beforeAuthorize', $this);
@@ -101,9 +117,10 @@ class OAuthController extends AppController
             $serializeKeys = array_keys($event->result);
         }
 
-        if ($this->request->is('post') && $this->request->data['authorization'] === 'Approve') {
-            $ownerModel = isset($this->request->data['owner_model']) ? $this->request->data['owner_model'] : 'Users';
-            $ownerId = isset($this->request->data['owner_id']) ? $this->request->data['owner_id'] : $this->Auth->user('id');
+
+        if ($currentTokens > 0 || ($this->request->is('post') && $this->request->data('authorization') === 'Approve')) {
+            $ownerModel = $this->request->data('owner_model') ?: $ownerModel;
+            $ownerId = $this->request->data('owner_id') ?: $ownerId;
             $redirectUri = $this->OAuth->Server->getGrantType('authorization_code')->newAuthorizeRequest($ownerModel, $ownerId, $authParams);
             $event = new Event('OAuthServer.afterAuthorize', $this);
             EventManager::instance()->dispatch($event);
