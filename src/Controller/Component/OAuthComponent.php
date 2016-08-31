@@ -96,10 +96,8 @@ class OAuthComponent extends Component
                     $controller->request->data['password'] = $password;
                     $loginOk = $controller->Auth->identify();
                     if ($loginOk) {
-                        
                         return $loginOk['id'];
                     } else {
-                        
                         return false;
                     }
                 });
@@ -120,11 +118,9 @@ class OAuthComponent extends Component
     {
         $controller = $this->_registry->getController();
         try {
-            
             return $this->Server->getGrantType($authGrant)->checkAuthorizeParams();
         } catch (\OAuthException $e) {
             if ($e->shouldRedirect()) {
-                
                 return $controller->redirect($e->getRedirectUri());
             }
 
