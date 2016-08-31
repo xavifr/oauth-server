@@ -20,6 +20,7 @@ trait GetStorageTrait
         if (!$className) {
             throw new Exception(sprintf('Storage class "%s" was not found.', $class));
         }
+        
         return $className;
     }
 
@@ -39,6 +40,7 @@ trait GetStorageTrait
         }
 
         $className = $this->_resolveClassName($config['className']);
+        
         return new $className();
     }
 }
