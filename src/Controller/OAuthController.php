@@ -1,7 +1,6 @@
 <?php
 namespace OAuthServer\Controller;
 
-use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
@@ -9,6 +8,10 @@ use Cake\I18n\Time;
 use League\OAuth2\Server\Exception\AccessDeniedException;
 use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Util\RedirectUri;
+
+$appControllerReal = Configure::read('OAuthServer.appController') ?: 'App\Controller\AppController';
+$appControllerAlias = 'OAuthServer\Controller\AppController';
+class_alias($appControllerReal, $appControllerAlias);
 
 /**
  * Class OAuthController
