@@ -50,6 +50,7 @@ class OAuthController extends AppController
     {
         $this->redirect([
             'action' => 'authorize',
+            '_ext' => $this->request->param('_ext'),
             '?' => $this->request->query
         ], 301);
     }
