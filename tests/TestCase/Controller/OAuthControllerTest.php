@@ -39,9 +39,21 @@ class OAuthControllerTest extends IntegrationTestCase
         $this->assertInstanceOf(TestAppController::class, $controller);
     }
 
-    public function testOauthRedirectsToAuthorize()
+    public function extensions()
     {
-        $this->get('/oauth?client_id=CID&anything=at_all');
-        $this->assertRedirect(['controller' => 'OAuth', 'action' => 'authorize', '?' => ['client_id' => 'CID', 'anything' => 'at_all']]);
+        return [
+            [null],
+            ['json']
+        ];
+    }
+
+    /**
+     * @dataProvider extensions
+     */
+    public function testOauthRedirectsToAuthorize($ext)
+    {
+        $extension = $ext ? ".$ext" : '';
+        $this->get("/oauth$extension?client_id=CID&anything=at_all");
+        $this->assertRedirect(['controller' => 'OAuth', 'action' => 'authorize', '_ext' => $ext, '?' => ['client_id' => 'CID', 'anything' => 'at_all']]);
     }
 }
