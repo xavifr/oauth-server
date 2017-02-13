@@ -48,28 +48,10 @@ class OAuthController extends AppController
      */
     public function oauth()
     {
-        if ($this->OAuth->checkAuthParams('authorization_code')) {
-            if (!$this->Auth->user()) {
-                $query = $this->request->query;
-                $query['redir'] = 'oauth';
-
-                $this->redirect(
-                    [
-                        'plugin' => false,
-                        'controller' => 'Users',
-                        'action' => 'login',
-                        '?' => $query
-                    ]
-                );
-            } else {
-                $this->redirect(
-                    [
-                        'action' => 'authorize',
-                        '?' => $this->request->query
-                    ]
-                );
-            }
-        }
+        $this->redirect([
+            'action' => 'authorize',
+            '?' => $this->request->query
+        ], 301);
     }
 
     /**

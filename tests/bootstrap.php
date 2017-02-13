@@ -21,6 +21,7 @@ require_once 'vendor/autoload.php';
 define('ROOT', $root . DS . 'tests' . DS . 'test_app' . DS);
 define('APP', ROOT . 'App' . DS);
 define('TMP', sys_get_temp_dir() . DS);
+define('CONFIG', $root . DS . 'config' . DS);
 Configure::write('debug', true);
 Configure::write('App', [
     'namespace' => 'App',
@@ -53,3 +54,6 @@ ConnectionManager::config('test', ['url' => getenv('db_dsn')]);
 Plugin::load('OAuth', [
     'path' => dirname(dirname(__FILE__)) . DS,
 ]);
+
+\Cake\Routing\DispatcherFactory::add('Routing');
+\Cake\Routing\DispatcherFactory::add('ControllerFactory');
