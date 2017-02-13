@@ -109,27 +109,4 @@ class OAuthComponent extends Component
 
         $this->Server = $server;
     }
-
-    /**
-     * @param string $authGrant Grant type
-     * @return bool|\Cake\Network\Response|void
-     */
-    public function checkAuthParams($authGrant)
-    {
-        $controller = $this->_registry->getController();
-        try {
-            return $this->Server->getGrantType($authGrant)->checkAuthorizeParams();
-        } catch (\OAuthException $e) {
-            if ($e->shouldRedirect()) {
-                return $controller->redirect($e->getRedirectUri());
-            }
-
-            $controller->RequestHandler->renderAs($this, 'json');
-            $controller->response->statusCode($e->httpStatusCode);
-            $controller->response->header($e->getHttpHeaders());
-            $controller->set('response', $e);
-            
-            return false;
-        }
-    }
 }

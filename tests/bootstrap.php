@@ -19,7 +19,7 @@ chdir($root);
 require_once 'vendor/cakephp/cakephp/src/basics.php';
 require_once 'vendor/autoload.php';
 define('ROOT', $root . DS . 'tests' . DS . 'test_app' . DS);
-define('APP', ROOT . 'App' . DS);
+define('APP', ROOT);
 define('TMP', sys_get_temp_dir() . DS);
 define('CONFIG', $root . DS . 'config' . DS);
 Configure::write('debug', true);
@@ -27,7 +27,7 @@ Configure::write('App', [
     'namespace' => 'App',
     'paths' => [
         'plugins' => [ROOT . 'Plugin' . DS],
-        'templates' => [ROOT . 'App' . DS . 'Template' . DS]
+        'templates' => [ROOT . 'Template' . DS]
     ]
 ]);
 Cake\Cache\Cache::config([
@@ -54,6 +54,7 @@ ConnectionManager::config('test', ['url' => getenv('db_dsn')]);
 Plugin::load('OAuth', [
     'path' => dirname(dirname(__FILE__)) . DS,
 ]);
+Plugin::load('OAuthServer', ['path' => $root]);
 
 \Cake\Routing\DispatcherFactory::add('Routing');
 \Cake\Routing\DispatcherFactory::add('ControllerFactory');
