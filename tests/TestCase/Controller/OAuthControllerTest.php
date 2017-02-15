@@ -2,8 +2,6 @@
 
 namespace OAuthServer\Test\TestCase\Controller;
 
-use Cake\Controller\Controller;
-use Cake\Core\Configure;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
@@ -76,6 +74,7 @@ class OAuthControllerTest extends IntegrationTestCase
     private function url($path, $ext)
     {
         $ext = $ext ? ".$ext" : '';
+
         return $path . $ext;
     }
 }
