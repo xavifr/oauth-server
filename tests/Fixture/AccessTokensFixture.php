@@ -15,7 +15,10 @@ class AccessTokensFixture extends TestFixture
     public $fields = [
         'oauth_token' => ['type' => 'string'],
         'session_id' => ['type' => 'integer'],
-        'expired' => ['type' => 'integer'],
+        'expires' => ['type' => 'integer'],
+        '_constraints' => [
+            'primary' => ['type' => 'primary', 'columns' => ['oauth_token']]
+        ]
     ];
 
     public $records = [];

@@ -18,6 +18,9 @@ class SessionsFixture extends TestFixture
         'owner_id' => ['type' => 'string'],
         'client_id' => ['type' => 'string'],
         'client_redirect_uri' => ['type' => 'string'],
+        '_constraints' => [
+            'primary' => ['type' => 'primary', 'columns' => ['id']]
+        ]
     ];
 
     public $records = [];

@@ -2,10 +2,8 @@
 
 namespace OAuthServer\Test\TestCase\Controller;
 
-use Cake\Controller\Component\AuthComponent;
-use Cake\Controller\Controller;
-use Cake\Core\Configure;
 use Cake\Event\EventManager;
+use Cake\ORM\TableRegistry;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
@@ -19,6 +17,9 @@ class OAuthControllerTest extends IntegrationTestCase
         'plugin.o_auth_server.scopes',
         'plugin.o_auth_server.access_tokens',
         'plugin.o_auth_server.sessions',
+        'plugin.o_auth_server.session_scopes',
+        'plugin.o_auth_server.auth_codes',
+        'plugin.o_auth_server.auth_code_scopes',
     ];
 
     public function setUp()
@@ -77,6 +78,19 @@ class OAuthControllerTest extends IntegrationTestCase
         $this->assertRedirect(['controller' => 'Users', 'action' => 'login']);
     }
 
+    public function testStoreCurrentUserAndDefaultAuth()
+    {
+        $this->session(['Auth.User.id' => 5]);
+
+        $_GET = ['client_id' => 'TEST', 'redirect_uri' => 'http://www.example.com', 'response_type' => 'code', 'scope' => 'test'];
+        $this->post('/oauth/authorize' . '?' . http_build_query($_GET), ['authorization' => 'Approve']);
+
+        $this->assertRedirect();
+
+        $sessions = TableRegistry::get('OAuthServer.Sessions');
+        $this->assertTrue($sessions->exists(['owner_id' => 5, 'owner_model' => 'Users']), "Session in database was not correct");
+    }
+
     public function testOverrideOwnerModelAndOwnerId()
     {
         $this->session(['Auth.User.id' => 5]);
@@ -89,10 +103,13 @@ class OAuthControllerTest extends IntegrationTestCase
         });
 
         $_GET = ['client_id' => 'TEST', 'redirect_uri' => 'http://www.example.com', 'response_type' => 'code', 'scope' => 'test'];
-        $this->get('/oauth/authorize' . '?' . http_build_query($_GET));
+        $this->post('/oauth/authorize' . '?' . http_build_query($_GET), ['authorization' => 'Approve']);
 
         $this->assertEquals('AnotherModel', $this->viewVariable('ownerModel'));
         $this->assertEquals(15, $this->viewVariable('ownerId'));
+
+        $sessions = TableRegistry::get('OAuthServer.Sessions');
+        $this->assertTrue($sessions->exists(['owner_id' => 15, 'owner_model' => 'AnotherModel']), "Session in database was not correct");
     }
 
     private function url($path, $ext)
