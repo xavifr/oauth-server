@@ -7,7 +7,6 @@
 
 namespace OAuthServer\Test\Fixture;
 
-
 use Cake\TestSuite\Fixture\TestFixture;
 
 class SessionsFixture extends TestFixture

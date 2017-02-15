@@ -113,16 +113,13 @@ class OAuthController extends AppController
             ->count();
 
         if ($currentTokens > 0 || ($this->request->is('post') && $this->request->data('authorization') === 'Approve')) {
-
             $redirectUri = $authCodeGrant->newAuthorizeRequest($ownerModel, $ownerId, $authParams);
 
             $event = new Event('OAuthServer.afterAuthorize', $this);
             EventManager::instance()->dispatch($event);
 
             return $this->redirect($redirectUri);
-
         } elseif ($this->request->is('post')) {
-
             $event = new Event('OAuthServer.afterDeny', $this);
             EventManager::instance()->dispatch($event);
 
@@ -134,7 +131,6 @@ class OAuthController extends AppController
             ]);
 
             return $this->redirect($redirectUri);
-
         }
 
         $this->set('authParams', $authParams);
