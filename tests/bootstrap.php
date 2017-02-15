@@ -20,6 +20,7 @@ require_once 'vendor/cakephp/cakephp/src/basics.php';
 require_once 'vendor/autoload.php';
 define('ROOT', $root . DS . 'tests' . DS . 'test_app' . DS);
 define('APP', ROOT);
+define('CONFIG', $root . DS . 'config' . DS);
 define('TMP', sys_get_temp_dir() . DS);
 
 $loader = new \Cake\Core\ClassLoader;
