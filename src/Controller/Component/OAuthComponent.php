@@ -61,7 +61,7 @@ class OAuthComponent extends Component
     {
         $serverConfig = $this->config('authorizationServer');
         $serverClassName = App::className($serverConfig['className']);
-        
+
         return new $serverClassName();
     }
 
@@ -128,7 +128,7 @@ class OAuthComponent extends Component
             $controller->response->statusCode($e->httpStatusCode);
             $controller->response->header($e->getHttpHeaders());
             $controller->set('response', $e);
-            
+
             return false;
         }
     }

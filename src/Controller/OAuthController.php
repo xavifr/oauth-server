@@ -106,7 +106,7 @@ class OAuthController extends AppController
             $redirectUri = $this->OAuth->Server->getGrantType('authorization_code')->newAuthorizeRequest($ownerModel, $ownerId, $authParams);
             $event = new Event('OAuthServer.afterAuthorize', $this);
             EventManager::instance()->dispatch($event);
-            
+
             return $this->redirect($redirectUri);
         } elseif ($this->request->is('post')) {
             $event = new Event('OAuthServer.afterDeny', $this);

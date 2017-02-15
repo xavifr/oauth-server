@@ -65,7 +65,7 @@ class OAuthAuthenticate extends BaseAuthenticate
 
         if ($this->config('server')) {
             $this->Server = $this->config('server');
-            
+
             return;
         }
 
@@ -132,7 +132,7 @@ class OAuthAuthenticate extends BaseAuthenticate
                     ]
                 )
             );
-            
+
             return $response;
         }
         $message = __d('authenticate', 'You are not authenticated.');
@@ -149,7 +149,7 @@ class OAuthAuthenticate extends BaseAuthenticate
             $this->Server->isValidRequest(true, $request->query('access_token'));
         } catch (OAuthException $e) {
             $this->_exception = $e;
-            
+
             return false;
         }
         $ownerModel = $this->Server
