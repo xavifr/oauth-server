@@ -6,15 +6,12 @@ use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\I18n\Time;
 use Cake\Network\Exception\HttpException;
+use Cake\Network\Response;
 use Cake\ORM\Query;
 use League\OAuth2\Server\Exception\AccessDeniedException;
 use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Util\RedirectUri;
-
-$appControllerReal = Configure::read('OAuthServer.appController') ?: 'App\Controller\AppController';
-$appControllerAlias = 'OAuthServer\Controller\AppController';
-class_alias($appControllerReal, $appControllerAlias);
 
 /**
  * Class OAuthController
@@ -63,21 +60,23 @@ class OAuthController extends AppController
 
     /**
      * @throws \League\OAuth2\Server\Exception\InvalidGrantException
+     * @return Response|null
      */
     public function authorize()
     {
+    /** @var AuthCodeGrant $authCodeGrant */
         try {
-            /** @var AuthCodeGrant $authCodeGrant */
             $authCodeGrant = $this->OAuth->Server->getGrantType('authorization_code');
             $authParams = $authCodeGrant->checkAuthorizeParams();
         } catch (OAuthException $e) {
-            // TODO ignoring $e->getHttpHeaders() for now
+            // ignoring $e->getHttpHeaders() for now
             // it only sends WWW-Authenticate header in case of InvalidClientException
             throw new HttpException($e->getMessage(), $e->httpStatusCode, $e);
         }
 
         if (!$this->Auth->user()) {
             $this->Auth->redirectUrl($this->request->here(false));
+
             return $this->redirect($this->Auth->config('loginAction'));
         }
 
@@ -119,7 +118,7 @@ class OAuthController extends AppController
 
             $event = new Event('OAuthServer.afterAuthorize', $this);
             EventManager::instance()->dispatch($event);
-            
+
             return $this->redirect($redirectUri);
 
         } elseif ($this->request->is('post')) {

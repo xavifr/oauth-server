@@ -10,28 +10,7 @@ use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
 use OAuthServer\Controller\OAuthController;
-
-class TestAppController extends Controller
-{
-    public function initialize()
-    {
-        $this->loadComponent('Auth', [
-            'authenticate' => [
-                AuthComponent::ALL => [
-                    'userModel' => 'Users',
-                ],
-                'OAuthServer.OAuth',
-                'Form',
-            ],
-            'loginAction' => [
-                'controller' => 'Users',
-                'action' => 'login',
-            ]
-        ]);
-    }
-}
-
-Configure::write('OAuthServer.appController', TestAppController::class);
+use TestApp\Controller\TestAppController;
 
 class OAuthControllerTest extends IntegrationTestCase
 {
@@ -119,6 +98,7 @@ class OAuthControllerTest extends IntegrationTestCase
     private function url($path, $ext)
     {
         $ext = $ext ? ".$ext" : '';
+
         return $path . $ext;
     }
 }
