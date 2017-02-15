@@ -2,26 +2,10 @@
 
 namespace OAuthServer\Test\TestCase\Controller;
 
-use Cake\Controller\Controller;
-use Cake\Core\Configure;
 use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
 use OAuthServer\Controller\OAuthController;
-
-class TestAppController extends Controller
-{
-    public function initialize()
-    {
-        $this->loadComponent('Auth', [
-            'loginAction' => [
-                'controller' => 'Users',
-                'action' => 'login',
-            ]
-        ]);
-    }
-}
-
-Configure::write('OAuthServer.appController', TestAppController::class);
+use TestApp\Controller\TestAppController;
 
 class OAuthControllerTest extends IntegrationTestCase
 {
