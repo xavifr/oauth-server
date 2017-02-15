@@ -21,7 +21,11 @@ require_once 'vendor/autoload.php';
 define('ROOT', $root . DS . 'tests' . DS . 'test_app' . DS);
 define('APP', ROOT);
 define('TMP', sys_get_temp_dir() . DS);
-define('CONFIG', $root . DS . 'config' . DS);
+
+$loader = new \Cake\Core\ClassLoader;
+$loader->register();
+$loader->addNamespace('TestApp', APP);
+
 Configure::write('debug', true);
 Configure::write('App', [
     'namespace' => 'App',
@@ -50,7 +54,13 @@ if (!getenv('db_dsn')) {
 if (!getenv('DB')) {
     putenv('DB=sqlite');
 }
+
 ConnectionManager::config('test', ['url' => getenv('db_dsn')]);
+
+Configure::write('OAuthServer.appController', 'TestApp\Controller\TestAppController');
+
+require_once $root . DS . 'config' . DS . 'bootstrap.php';
+
 Plugin::load('OAuth', [
     'path' => dirname(dirname(__FILE__)) . DS,
 ]);

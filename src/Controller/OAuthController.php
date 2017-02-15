@@ -11,10 +11,6 @@ use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Util\RedirectUri;
 
-$appControllerReal = Configure::read('OAuthServer.appController') ?: 'App\Controller\AppController';
-$appControllerAlias = 'OAuthServer\Controller\AppController';
-class_alias($appControllerReal, $appControllerAlias);
-
 /**
  * Class OAuthController
  *
@@ -112,7 +108,7 @@ class OAuthController extends AppController
             $redirectUri = $this->OAuth->Server->getGrantType('authorization_code')->newAuthorizeRequest($ownerModel, $ownerId, $authParams);
             $event = new Event('OAuthServer.afterAuthorize', $this);
             EventManager::instance()->dispatch($event);
-            
+
             return $this->redirect($redirectUri);
         } elseif ($this->request->is('post')) {
             $event = new Event('OAuthServer.afterDeny', $this);
