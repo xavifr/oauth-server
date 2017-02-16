@@ -81,7 +81,7 @@ class OAuthController extends AppController
         }
 
         $clientId = $this->request->query('client_id');
-        $ownerModel = $this->Auth->getAuthenticate('OAuthServer.OAuth')->config('userModel');
+        $ownerModel = $this->Auth->config('authenticate.all.userModel');
         $ownerId = $this->Auth->user(Configure::read("OAuthServer.models.{$ownerModel}.id") ?: 'id');
 
         $event = new Event('OAuthServer.beforeAuthorize', $this);
