@@ -21,7 +21,7 @@ class OAuthController extends AppController
      */
     public function initialize()
     {
-        $this->loadComponent('OAuthServer.OAuth', (array)Configure::read('OAuth'));
+        $this->loadComponent('OAuthServer.OAuth', (array)Configure::read('OAuthServer'));
         $this->loadComponent('RequestHandler');
         parent::initialize();
     }
