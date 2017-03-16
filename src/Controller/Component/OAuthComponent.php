@@ -4,7 +4,7 @@ namespace OAuthServer\Controller\Component;
 use Cake\Controller\Component;
 use Cake\Core\App;
 use Cake\Network\Exception\NotImplementedException;
-use OAuthServer\Model\Storage;
+use Cake\Utility\Inflector;
 use OAuthServer\Traits\GetStorageTrait;
 
 class OAuthComponent extends Component
@@ -27,7 +27,6 @@ class OAuthComponent extends Component
      * @var array
      */
     protected $_defaultConfig = [
-        'tokenTTL' => 2592000, //TTL 30 * 24 * 60 * 60 in seconds
         'supportedGrants' => ['AuthCode', 'RefreshToken', 'ClientCredentials', 'Password'],
         'storages' => [
             'session' => [
@@ -80,13 +79,18 @@ class OAuthComponent extends Component
         $server->setRefreshTokenStorage($this->_getStorage('refreshToken'));
 
         $supportedGrants = isset($config['supportedGrants']) ? $config['supportedGrants'] : $this->config('supportedGrants');
-        foreach ($supportedGrants as $grant) {
+        $supportedGrants = $this->_registry->normalizeArray($supportedGrants);
+
+        foreach ($supportedGrants as $properties) {
+            $grant = $properties['class'];
+
             if (!in_array($grant, $this->_allowedGrants)) {
-                throw new NotImplementedException(__('The {0} grant type is not supported by the OAuth server'));
+                throw new NotImplementedException(__('The {0} grant type is not supported by the OAuthServer'));
             }
 
             $className = '\\League\\OAuth2\\Server\\Grant\\' . $grant . 'Grant';
             $objGrant = new $className();
+
             if ($grant === 'Password') {
                 $objGrant->setVerifyCredentialsCallback(function ($username, $password) {
                     $controller = $this->_registry->getController();
@@ -102,10 +106,20 @@ class OAuthComponent extends Component
                     }
                 });
             }
+
+            foreach ($properties['config'] as $key => $value) {
+                $method = 'set' . Inflector::camelize($key);
+                if (is_callable([$objGrant, $method])) {
+                    $objGrant->$method($value);
+                }
+            }
+
             $server->addGrantType($objGrant);
         }
 
-        $server->setAccessTokenTTL($this->config('tokenTTL'));
+        if ($this->config('accessTokenTTL')) {
+            $server->setAccessTokenTTL($this->config('accessTokenTTL'));
+        }
 
         $this->Server = $server;
     }

@@ -31,7 +31,7 @@ class OAuthController extends AppController
             throw new \RuntimeException("OAuthServer requires Auth component to be loaded and properly configured");
         }
 
-        $this->loadComponent('OAuthServer.OAuth', (array)Configure::read('OAuth'));
+        $this->loadComponent('OAuthServer.OAuth', (array)Configure::read('OAuthServer'));
         $this->loadComponent('RequestHandler');
     }
 
@@ -150,15 +150,9 @@ class OAuthController extends AppController
             $this->set($response);
             $this->set('_serialize', array_keys($response));
         } catch (OAuthException $e) {
-            $this->response->statusCode($e->httpStatusCode);
-            $headers = $e->getHttpHeaders();
-            array_shift($headers);
-            $this->response->header($headers);
-            $this->set([
-                'error' => $e->errorType,
-                'message' => $e->getMessage()
-            ]);
-            $this->set('_serialize', ['error', 'message']);
+            // ignoring $e->getHttpHeaders() for now
+            // it only sends WWW-Authenticate header in case of InvalidClientException
+            throw new HttpException($e->getMessage(), $e->httpStatusCode, $e);
         }
     }
 }
