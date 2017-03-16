@@ -20,6 +20,7 @@ require_once 'vendor/cakephp/cakephp/src/basics.php';
 require_once 'vendor/autoload.php';
 define('ROOT', $root . DS . 'tests' . DS . 'test_app' . DS);
 define('APP', ROOT);
+define('CONFIG', $root . DS . 'config' . DS);
 define('TMP', sys_get_temp_dir() . DS);
 
 $loader = new \Cake\Core\ClassLoader;
@@ -64,3 +65,6 @@ require_once $root . DS . 'config' . DS . 'bootstrap.php';
 Plugin::load('OAuth', [
     'path' => dirname(dirname(__FILE__)) . DS,
 ]);
+
+\Cake\Routing\DispatcherFactory::add('Routing');
+\Cake\Routing\DispatcherFactory::add('ControllerFactory');
