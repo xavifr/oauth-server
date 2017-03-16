@@ -104,7 +104,6 @@ class OAuthController extends AppController
             $serializeKeys = array_keys($event->result);
         }
 
-
         if ($currentTokens > 0 || ($this->request->is('post') && $this->request->data('authorization') === 'Approve')) {
             $ownerModel = $this->request->data('owner_model') ?: $ownerModel;
             $ownerId = $this->request->data('owner_id') ?: $ownerId;
