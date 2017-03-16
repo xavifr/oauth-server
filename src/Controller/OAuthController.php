@@ -30,7 +30,7 @@ class OAuthController extends AppController
             throw new \RuntimeException("OAuthServer requires Auth component to be loaded and properly configured");
         }
 
-        $this->loadComponent('OAuthServer.OAuth', (array)Configure::read('OAuth'));
+        $this->loadComponent('OAuthServer.OAuth', (array)Configure::read('OAuthServer'));
         $this->loadComponent('RequestHandler');
     }
 
