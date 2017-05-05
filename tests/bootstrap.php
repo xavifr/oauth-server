@@ -32,7 +32,7 @@ Configure::write('App', [
     'namespace' => 'App',
     'paths' => [
         'plugins' => [ROOT . 'Plugin' . DS],
-        'templates' => [ROOT . 'App' . DS . 'Template' . DS]
+        'templates' => [ROOT . 'Template' . DS]
     ]
 ]);
 Cake\Cache\Cache::config([
@@ -65,6 +65,7 @@ require_once $root . DS . 'config' . DS . 'bootstrap.php';
 Plugin::load('OAuth', [
     'path' => dirname(dirname(__FILE__)) . DS,
 ]);
+Plugin::load('OAuthServer', ['path' => $root]);
 
 \Cake\Routing\DispatcherFactory::add('Routing');
 \Cake\Routing\DispatcherFactory::add('ControllerFactory');
