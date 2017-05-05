@@ -19,6 +19,9 @@ class ClientsFixture extends TestFixture
         'redirect_uri' => ['type' => 'string'],
         'parent_model' => ['type' => 'string'],
         'parent_id' => ['type' => 'integer'],
+        '_constraints' => [
+            'primary' => ['type' => 'primary', 'columns' => ['id']]
+        ]
     ];
 
     public $records = [

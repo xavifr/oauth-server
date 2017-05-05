@@ -7,6 +7,7 @@ use Cake\Event\EventManager;
 use Cake\I18n\Time;
 use Cake\Network\Exception\HttpException;
 use Cake\Network\Response;
+use Cake\ORM\Query;
 use League\OAuth2\Server\Exception\AccessDeniedException;
 use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
@@ -69,7 +70,7 @@ class OAuthController extends AppController
             $authParams = $authCodeGrant->checkAuthorizeParams();
         } catch (OAuthException $e) {
             // ignoring $e->getHttpHeaders() for now
-            // it only sends add WWW-Authenticate header in case of InvalidClientException
+            // it only sends WWW-Authenticate header in case of InvalidClientException
             throw new HttpException($e->getMessage(), $e->httpStatusCode, $e);
         }
 
@@ -79,21 +80,9 @@ class OAuthController extends AppController
             return $this->redirect($this->Auth->config('loginAction'));
         }
 
-        $ownerModel = $this->request->query('owner_model') ?: 'Users';
-        $ownerId = $this->request->query('owner_id') ?: $this->Auth->user('id');
         $clientId = $this->request->query('client_id');
-
-        $currentTokens = $this->loadModel('OAuthServer.AccessTokens')
-            ->find()
-            ->where(['expires > ' => Time::now()->getTimestamp()])
-            ->matching('Sessions', function ($q) use ($ownerModel, $ownerId, $clientId) {
-                return $q->where([
-                    'owner_model' => $ownerModel,
-                    'owner_id' => $ownerId,
-                    'client_id' => $clientId
-                ]);
-            })
-            ->count();
+        $ownerModel = $this->Auth->config('authenticate.all.userModel');
+        $ownerId = $this->Auth->user(Configure::read("OAuthServer.models.{$ownerModel}.id") ?: 'id');
 
         $event = new Event('OAuthServer.beforeAuthorize', $this);
         EventManager::instance()->dispatch($event);
@@ -102,12 +91,30 @@ class OAuthController extends AppController
         if (is_array($event->result)) {
             $this->set($event->result);
             $serializeKeys = array_keys($event->result);
+
+            if (isset($event->result['ownerId'])) {
+                $ownerId = $event->result['ownerId'];
+            }
+            if (isset($event->result['ownerModel'])) {
+                $ownerModel = $event->result['ownerModel'];
+            }
         }
 
+        $currentTokens = $this->loadModel('OAuthServer.AccessTokens')
+            ->find()
+            ->where(['expires > ' => Time::now()->getTimestamp()])
+            ->matching('Sessions', function (Query $q) use ($ownerModel, $ownerId, $clientId) {
+                return $q->where([
+                    'owner_model' => $ownerModel,
+                    'owner_id' => $ownerId,
+                    'client_id' => $clientId
+                ]);
+            })
+            ->count();
+
         if ($currentTokens > 0 || ($this->request->is('post') && $this->request->data('authorization') === 'Approve')) {
-            $ownerModel = $this->request->data('owner_model') ?: $ownerModel;
-            $ownerId = $this->request->data('owner_id') ?: $ownerId;
-            $redirectUri = $this->OAuth->Server->getGrantType('authorization_code')->newAuthorizeRequest($ownerModel, $ownerId, $authParams);
+            $redirectUri = $authCodeGrant->newAuthorizeRequest($ownerModel, $ownerId, $authParams);
+
             $event = new Event('OAuthServer.afterAuthorize', $this);
             EventManager::instance()->dispatch($event);
 
