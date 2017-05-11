@@ -41,40 +41,23 @@ class OAuthControllerTest extends IntegrationTestCase
         $this->assertInstanceOf(TestAppController::class, $controller);
     }
 
-    public function extensions()
+    public function testOauthRedirectsToAuthorize()
     {
-        return [
-            [null],
-            ['json']
-        ];
+        $this->get($this->url("/oauth") . "?client_id=CID&anything=at_all");
+        $this->assertRedirect(['controller' => 'OAuth', 'action' => 'authorize', '?' => ['client_id' => 'CID', 'anything' => 'at_all']]);
     }
 
-    /**
-     * @dataProvider extensions
-     */
-    public function testOauthRedirectsToAuthorize($ext)
-    {
-        $this->get($this->url("/oauth", $ext) . "?client_id=CID&anything=at_all");
-        $this->assertRedirect(['controller' => 'OAuth', 'action' => 'authorize', '_ext' => $ext, '?' => ['client_id' => 'CID', 'anything' => 'at_all']]);
-    }
-
-    /**
-     * @dataProvider extensions
-     */
-    public function testAuthorizeInvalidParams($ext)
+    public function testAuthorizeInvalidParams()
     {
         $_GET = ['client_id' => 'INVALID', 'redirect_uri' => 'http://www.example.com', 'response_type' => 'code', 'scope' => 'test'];
-        $this->get($this->url('/oauth/authorize', $ext) . '?' . http_build_query($_GET));
+        $this->get($this->url('/oauth/authorize') . '?' . http_build_query($_GET));
         $this->assertResponseError();
     }
 
-    /**
-     * @dataProvider extensions
-     */
-    public function testAuthorizeLoginRedirect($ext)
+    public function testAuthorizeLoginRedirect()
     {
         $_GET = ['client_id' => 'TEST', 'redirect_uri' => 'http://www.example.com', 'response_type' => 'code', 'scope' => 'test'];
-        $this->get($this->url('/oauth/authorize', $ext) . '?' . http_build_query($_GET));
+        $this->get($this->url('/oauth/authorize') . '?' . http_build_query($_GET));
         $this->assertRedirect(['controller' => 'Users', 'action' => 'login']);
     }
 
@@ -112,7 +95,7 @@ class OAuthControllerTest extends IntegrationTestCase
         $this->assertTrue($sessions->exists(['owner_id' => 15, 'owner_model' => 'AnotherModel']), "Session in database was not correct");
     }
 
-    private function url($path, $ext)
+    private function url($path, $ext = null)
     {
         $ext = $ext ? ".$ext" : '';
 
