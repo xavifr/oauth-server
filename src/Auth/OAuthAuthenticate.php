@@ -8,11 +8,11 @@ use Cake\Database\Exception;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\HttpException;
 use Cake\Network\Request;
 use Cake\Network\Response;
 use Cake\ORM\TableRegistry;
 use League\OAuth2\Server\Exception\OAuthException;
-use OAuthServer\Model\Storage;
 use OAuthServer\Traits\GetStorageTrait;
 
 class OAuthAuthenticate extends BaseAuthenticate
@@ -95,7 +95,7 @@ class OAuthAuthenticate extends BaseAuthenticate
      */
     public function authenticate(Request $request, Response $response)
     {
-        return false;
+        return $this->getUser($request);
     }
 
     /**
@@ -109,31 +109,9 @@ class OAuthAuthenticate extends BaseAuthenticate
             return false;
         }
         if (isset($this->_exception)) {
-            $response->statusCode($this->_exception->httpStatusCode);
-
-            //add : to http code for cakephp (header method in Network/Response expects header separated with colon notation)
-            $headers = $this->_exception->getHttpHeaders();
-            $code = (string)$this->_exception->httpStatusCode;
-            $headers = array_map(function ($header) use ($code) {
-                $pos = strpos($header, $code);
-                if ($pos !== false) {
-                    return substr($header, 0, $pos + strlen($code)) . ':' . substr($header, $pos + strlen($code) + 1);
-                }
-
-                return $header;
-            }, $headers);
-            $response->header($headers);
-
-            $response->body(
-                json_encode(
-                    [
-                        'error' => $this->_exception->errorType,
-                        'message' => $this->_exception->getMessage()
-                    ]
-                )
-            );
-
-            return $response;
+            // ignoring $e->getHttpHeaders() for now
+            // it only sends WWW-Authenticate header in case of InvalidClientException
+            throw new HttpException($this->_exception->getMessage(), $this->_exception->httpStatusCode, $this->_exception);
         }
         $message = __d('authenticate', 'You are not authenticated.');
         throw new BadRequestException($message);
@@ -152,26 +130,24 @@ class OAuthAuthenticate extends BaseAuthenticate
 
             return false;
         }
+
         $ownerModel = $this->Server
             ->getAccessToken()
             ->getSession()
             ->getOwnerType();
+
         $ownerId = $this->Server
             ->getAccessToken()
             ->getSession()
             ->getOwnerId();
 
-        try {
-            $owner = TableRegistry::get($ownerModel)
-                ->get($ownerId)
-                ->toArray();
-        } catch (Exception $e) {
-            $this->_exception = $e;
-            $owner = null;
-        }
+        $owner = TableRegistry::get($ownerModel)
+            ->get($ownerId)
+            ->toArray();
 
         $event = new Event('OAuthServer.getUser', $request, [$ownerModel, $ownerId, $owner]);
         EventManager::instance()->dispatch($event);
+
         if ($event->result !== null) {
             return $event->result;
         } else {
