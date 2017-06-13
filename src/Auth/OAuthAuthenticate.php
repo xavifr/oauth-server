@@ -142,9 +142,9 @@ class OAuthAuthenticate extends BaseAuthenticate
             ->getSession()
             ->getOwnerId();
 
-	$options = [];
-	
-	if ($this->_config['contain']) {
+        $options = [];
+
+        if ($this->_config['contain']) {
             $options['contain'] = $this->_config['contain'];
         }
 
