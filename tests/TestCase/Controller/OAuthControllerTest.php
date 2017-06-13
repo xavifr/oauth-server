@@ -57,8 +57,10 @@ class OAuthControllerTest extends IntegrationTestCase
     public function testAuthorizeLoginRedirect()
     {
         $_GET = ['client_id' => 'TEST', 'redirect_uri' => 'http://www.example.com', 'response_type' => 'code', 'scope' => 'test'];
-        $this->get($this->url('/oauth/authorize') . '?' . http_build_query($_GET));
-        $this->assertRedirect(['controller' => 'Users', 'action' => 'login']);
+        $authorizeUrl = $this->url('/oauth/authorize') . '?' . http_build_query($_GET);
+
+        $this->get($authorizeUrl);
+        $this->assertRedirect(['controller' => 'Users', 'action' => 'login', '?' => ['redirect' => $authorizeUrl]]);
     }
 
     public function testStoreCurrentUserAndDefaultAuth()
