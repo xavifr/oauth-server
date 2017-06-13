@@ -52,7 +52,8 @@ class OAuthAuthenticate extends BaseAuthenticate
         ],
         'resourceServer' => [
             'className' => 'League\OAuth2\Server\ResourceServer'
-        ]
+        ],
+        'contain' => null
     ];
 
     /**
@@ -141,8 +142,14 @@ class OAuthAuthenticate extends BaseAuthenticate
             ->getSession()
             ->getOwnerId();
 
+	$options = [];
+	
+	if ($this->_config['contain']) {
+            $options['contain'] = $this->_config['contain'];
+        }
+
         $owner = TableRegistry::get($ownerModel)
-            ->get($ownerId)
+            ->get($ownerId, $options)
             ->toArray();
 
         $event = new Event('OAuthServer.getUser', $request, [$ownerModel, $ownerId, $owner]);
