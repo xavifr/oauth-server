@@ -95,7 +95,7 @@ class OAuthComponent extends Component
                 $objGrant->setVerifyCredentialsCallback(function ($username, $password) {
                     $controller = $this->_registry->getController();
                     $controller->Auth->constructAuthenticate();
-                    $userfield = $controller->components['Auth']['authenticate']['Form']['fields']['username'];
+                    $userfield = $controller->Auth->_config['authenticate']['Form']['fields']['username'];
                     $controller->request->data[$userfield] = $username;
                     $controller->request->data['password'] = $password;
                     $loginOk = $controller->Auth->identify();
