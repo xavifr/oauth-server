@@ -143,14 +143,16 @@ class OauthInitialMigration extends \Migrations\AbstractMigration
                 'owner_model',
                 'string',
                 [
-                    'limit' => 200
+                    'limit' => 200,
+                    'null' => true,
+                    'default' => null
                 ]
             )
             ->addColumn(
                 'owner_id',
-                'integer',
+                'uuid',
                 [
-                    'limit' => 11
+                    'limit' => 36
                 ]
             )
             ->addColumn(

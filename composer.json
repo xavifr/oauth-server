@@ -6,7 +6,7 @@
     "require": {
         "php": ">=7.3.0",
         "cakephp/cakephp": "3.8.*",
-        "league/oauth2-server": "~4.1",
+        "league/oauth2-server": "~7.4",
         "cakephp/migrations": "~2.0"
     },
     "require-dev": {
