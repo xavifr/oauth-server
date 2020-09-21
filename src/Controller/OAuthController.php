@@ -104,6 +104,11 @@ class OAuthController extends AppController
             }
         }
 
+
+        $client = $this->Auth->user();
+        $client = new \OAuthServer\Model\Entity\Client($client);
+        $parent = $client->parent;
+
         $currentTokens = $this->loadModel('OAuthServer.AccessTokens')
             ->find()
             ->where(['expires > ' => Time::now()->getTimestamp()])
@@ -116,7 +121,9 @@ class OAuthController extends AppController
             })
             ->count();
 
-        if ($currentTokens > 0 || ($this->request->is('post') && $this->request->data('authorization') === 'Approve')) {
+        if ($currentTokens > 0 || ($this->request->is('post') && $this->request->data('authorization') === 'Approve') ||
+            $this->request->query('approve') === 'true') {
+
             $redirectUri = $this->authCodeGrant->newAuthorizeRequest($ownerModel, $ownerId, $this->authParams);
 
             $event = new Event('OAuthServer.afterAuthorize', $this);
@@ -151,6 +158,7 @@ class OAuthController extends AppController
     {
         try {
             $response = $this->OAuth->Server->issueAccessToken();
+
             $this->set($response);
             $this->set('_serialize', array_keys($response));
         } catch (OAuthException $e) {

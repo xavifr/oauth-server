@@ -41,6 +41,7 @@ class Client extends Entity
     {
         $parent = $this->parent;
 
+
         return $parent ? $parent->name : $name;
     }
 }

@@ -19,10 +19,6 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
     {
         $this->loadModel('OAuthServer.AccessTokens');
         $result = $this->AccessTokens->find()
-            ->select([
-                'oauth_token',
-                'expires'
-            ])
             ->where([
                 'oauth_token' => $token
             ])

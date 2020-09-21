@@ -125,17 +125,15 @@ class OAuthAuthenticate extends BaseAuthenticate
     public function getUser(Request $request)
     {
         try {
-            $this->Server->isValidRequest(true, $request->query('access_token'));
+            $this->Server->isValidRequest(true, $request->getHeader('Authorization')[0]);
         } catch (OAuthException $e) {
             $this->_exception = $e;
 
             return false;
         }
 
-        $ownerModel = $this->Server
-            ->getAccessToken()
-            ->getSession()
-            ->getOwnerType();
+
+        $ownerModel = 'Users';
 
         $ownerId = $this->Server
             ->getAccessToken()
