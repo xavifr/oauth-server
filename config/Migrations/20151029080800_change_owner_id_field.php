@@ -6,18 +6,14 @@ class ChangeOwnerIdField extends \Migrations\AbstractMigration
     {
         $table = $this->table('oauth_sessions');
         $table
-            ->changeColumn('owner_id', 'string', [
-                    'limit' => 20
-                ]);
+            ->changeColumn('owner_id', 'uuid');
         $table->update();
     }
 
     public function down()
     {
         $table = $this->table('oauth_sessions');
-        $table->changeColumn('owner_id', 'int', [
-                'limit' => 11
-            ]);
+        $table->changeColumn('owner_id', 'uuid');
         $table->update();
     }
 }
