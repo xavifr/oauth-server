@@ -6,7 +6,7 @@
     "require": {
         "php": ">=7.3.0",
         "cakephp/cakephp": "3.8.*",
-        "league/oauth2-server": "dev-authorization-server ",
+        "league/oauth2-server": "~4.1.7",
         "cakephp/migrations": "~2.0"
     },
     "require-dev": {
@@ -30,11 +30,11 @@
             "name": "Walther Lalk",
             "email": "walther@uafrica.com"
         }
-    ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/DanielPenkov/oauth2-server"
-        }
     ]
+//    "repositories": [
+//        {
+//            "type": "vcs",
+//            "url": "https://github.com/DanielPenkov/oauth2-server"
+//        }
+//    ]
 }
