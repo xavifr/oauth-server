@@ -5,7 +5,7 @@
     "keywords": ["cakephp", "oauth", "oauth2", "oauth server", "oauth2 server"],
     "require": {
         "php": ">=7.3.0",
-        "cakephp/cakephp": "3.8.*",
+        "cakephp/cakephp": "3.9.*",
         "league/oauth2-server": "dev-authorization-server ",
         "cakephp/migrations": "~2.0"
     },
