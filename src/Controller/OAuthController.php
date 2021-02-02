@@ -1,7 +1,6 @@
 <?php
 namespace OAuthServer\Controller;
 
-use App\Controller\OAuthAppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
@@ -19,7 +18,7 @@ use League\OAuth2\Server\Util\RedirectUri;
  *
  * @property \OAuthServer\Controller\Component\OAuthComponent $OAuth
  */
-class OAuthController extends OAuthAppController
+class OAuthController extends AppController
 {
     /** @var AuthCodeGrant|null */
     private $authCodeGrant;
